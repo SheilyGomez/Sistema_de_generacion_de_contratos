@@ -50,4 +50,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Transaction::class);
     }
+
+    public function contractVerifications(): HasMany
+    {
+        return $this->hasMany(ContractVerification::class);
+    }
+
+    public function contractGenerations(): HasMany
+    {
+        return $this->hasMany(ContractGeneration::class);
+    }
 }
