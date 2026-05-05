@@ -80,13 +80,15 @@ class AiService
                 "model" => "deepseek/deepseek-v4-flash",
                 "max_tokens" => 8192,
                 "system" =>
-                    'Eres un abogado experto en redacción de contratos legales. Genera contratos profesionales, completos y legalmente sólidos en español. Incluye todas las cláusulas necesarias para proteger a ambas partes. Responde ÚNICAMENTE con un objeto JSON que contenga dos campos: "contract" (el texto completo del contrato) y "summary" (un breve resumen de lo que contiene el contrato). No incluyas formato markdown.',
+                    'Eres un abogado experto en redacción de contratos legales. Genera contratos profesionales, completos y legalmente sólidos en español. Incluye todas las cláusulas necesarias para proteger a ambas partes. Responde ÚNICAMENTE con un objeto JSON que contenga dos campos: "contract" (el contrato completo en formato HTML con estilos CSS inline profesionales para impresión A4 — usa márgenes, tipografía seria como Times New Roman o Georgia, títulos en negrita, cláusulas numeradas, secciones claras, y espacio para firmas al final) y "summary" (un breve resumen de lo que contiene el contrato). No incluyas backticks ni formato markdown. El HTML debe ser completo con <!DOCTYPE html> y estilos en <style>.',
                 "messages" => [
                     [
                         "role" => "user",
                         "content" => [
+                            [
                                 "type" => "text",
                                 "text" => $prompt,
+                            ],
                         ],
                     ],
                 ],
@@ -105,7 +107,7 @@ class AiService
         $data = $response->json();
         $text = $data["content"][0]["text"] ?? "";
         $cleanText = preg_replace(
-            '/^```(?:json)?\s*(.*?)\s*```$/is',
+            "/^```(?:json)?\s*(.*?)\s*```$/is",
             '$1',
             trim($text),
         );

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Contract\StoreGenerationRequest;
 use App\Http\Resources\ContractGenerationResource;
@@ -48,9 +49,12 @@ class ContractGenerationController extends Controller
 
         $result = $aiService->generateContract($requirements);
 
-        $fileName = 'contract_' . now()->format('Ymd_His') . '.txt';
+        $fileName = 'contract_' . now()->format('Ymd_His') . '.pdf';
         $filePath = "contracts/generations/{$fileName}";
-        Storage::put($filePath, $result['contract']);
+
+        $pdf = Pdf::loadHTML($result['contract']);
+        $pdf->setPaper('A4', 'portrait');
+        Storage::put($filePath, $pdf->output());
 
         $generation = ContractGeneration::create([
             'user_id' => $user->id,
