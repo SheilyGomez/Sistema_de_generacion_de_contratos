@@ -27,6 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('contract-generations', ContractGenerationController::class)
         ->only(['index', 'show', 'store']);
     Route::get('contract-generations/{contract_generation}/download', [ContractGenerationController::class, 'download']);
+    Route::post('contract-generations/{contract_generation}/request-review', [ContractGenerationController::class, 'requestReview']);
 });
 
 Route::middleware('auth:sanctum')->prefix('wallet')->group(function () {
@@ -39,18 +40,15 @@ Route::middleware('auth:sanctum')->prefix('wallet')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/lawyers', [LawyerRequestController::class, 'lawyers']);
 
-    Route::middleware('role:freelancer')->group(function () {
-        Route::post('/lawyer-requests', [LawyerRequestController::class, 'store']);
-    });
-
     Route::get('/lawyer-requests', [LawyerRequestController::class, 'index'])
         ->middleware('role:abogado');
 
     Route::get('/lawyer-requests/{lawyer_request}', [LawyerRequestController::class, 'show']);
     Route::get('/lawyer-requests/{lawyer_request}/download', [LawyerRequestController::class, 'download']);
 
-    Route::middleware('role:abogado')->group(function () {
-        Route::post('/lawyer-requests/{lawyer_request}/upload', [LawyerRequestController::class, 'upload']);
-        Route::post('/lawyer-requests/{lawyer_request}/complete', [LawyerRequestController::class, 'complete']);
-    });
+    Route::post('/lawyer-requests/{lawyer_request}/upload', [LawyerRequestController::class, 'upload'])
+        ->middleware('role:abogado');
+
+    Route::post('/lawyer-requests/{lawyer_request}/complete', [LawyerRequestController::class, 'complete'])
+        ->middleware('role:abogado');
 });

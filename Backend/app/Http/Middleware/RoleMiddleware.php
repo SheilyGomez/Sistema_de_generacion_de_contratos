@@ -12,7 +12,11 @@ class RoleMiddleware
     {
         $user = $request->user();
 
-        if (!$user || !in_array($user->role->value, $roles)) {
+        $userRole = $user?->role instanceof \App\Enums\Role
+            ? $user->role->value
+            : (string) $user?->role;
+
+        if (!$user || !in_array($userRole, $roles)) {
             return response()->json(['message' => 'No autorizado.'], 403);
         }
 
