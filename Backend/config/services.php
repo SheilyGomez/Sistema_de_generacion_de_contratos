@@ -38,4 +38,6 @@ return [
         "base_url" => env("NANOGPT_BASE_URL", "https://nano-gpt.com/api"),
         "api_key" => env("NANOGPT_API_KEY"),
     ],
+
+    "lawyer_review_price" => env("LAWYER_REVIEW_PRICE", 50.00),
 ];

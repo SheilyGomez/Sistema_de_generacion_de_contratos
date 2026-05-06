@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ContractGenerationController;
 use App\Http\Controllers\Api\ContractVerificationController;
+use App\Http\Controllers\Api\LawyerRequestController;
 use App\Http\Controllers\Api\WalletController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,4 +34,23 @@ Route::middleware('auth:sanctum')->prefix('wallet')->group(function () {
     Route::post('/withdraw', [WalletController::class, 'withdraw']);
     Route::get('/transactions', [WalletController::class, 'transactions']);
     Route::get('/balance', [WalletController::class, 'balance']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/lawyers', [LawyerRequestController::class, 'lawyers']);
+
+    Route::middleware('role:freelancer')->group(function () {
+        Route::post('/lawyer-requests', [LawyerRequestController::class, 'store']);
+    });
+
+    Route::get('/lawyer-requests', [LawyerRequestController::class, 'index'])
+        ->middleware('role:abogado');
+
+    Route::get('/lawyer-requests/{lawyer_request}', [LawyerRequestController::class, 'show']);
+    Route::get('/lawyer-requests/{lawyer_request}/download', [LawyerRequestController::class, 'download']);
+
+    Route::middleware('role:abogado')->group(function () {
+        Route::post('/lawyer-requests/{lawyer_request}/upload', [LawyerRequestController::class, 'upload']);
+        Route::post('/lawyer-requests/{lawyer_request}/complete', [LawyerRequestController::class, 'complete']);
+    });
 });

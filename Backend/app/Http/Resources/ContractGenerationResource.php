@@ -14,6 +14,9 @@ class ContractGenerationResource extends JsonResource
             'requirements' => $this->requirements,
             'ai_summary' => $this->ai_summary,
             'generated_file_name' => $this->generated_file_path ? basename($this->generated_file_path) : null,
+            'lawyer_requests' => LawyerRequestResource::collection(
+                $this->whenLoaded('lawyerRequests')
+            ),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
