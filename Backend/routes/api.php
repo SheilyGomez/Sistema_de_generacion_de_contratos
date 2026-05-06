@@ -24,6 +24,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ->only(['index', 'show', 'store']);
     Route::get('contract-verifications/{contract_verification}/download', [ContractVerificationController::class, 'download']);
 
+    Route::get('contract-generations/request-reviews', [ContractGenerationController::class, 'myLawyerRequests']);
     Route::apiResource('contract-generations', ContractGenerationController::class)
         ->only(['index', 'show', 'store']);
     Route::get('contract-generations/{contract_generation}/download', [ContractGenerationController::class, 'download']);

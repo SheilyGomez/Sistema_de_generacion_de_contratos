@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\LawyerRequestStatus;
+use App\Enums\Role;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Wallet\DepositRequest;
 use App\Http\Requests\Wallet\WithdrawRequest;
 use App\Http\Resources\TransactionResource;
+use App\Models\LawyerRequest;
 use App\Models\Transaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -39,6 +42,14 @@ class WalletController extends Controller
     public function withdraw(WithdrawRequest $request): JsonResponse
     {
         $user = $request->user();
+
+        $pendingTotal = (float) LawyerRequest::where('freelancer_id', $user->id)
+            ->where('status', LawyerRequestStatus::Pending)
+            ->sum('price');
+
+        $available = (float) $user->balance - $pendingTotal;
+
+        abort_if((float) $request->amount > $available, 400, 'Fondos insuficientes. Tienes ' . number_format($pendingTotal, 2) . ' comprometidos en peticiones pendientes.');
 
         $transaction = DB::transaction(function () use ($user, $request) {
             $user->decrement('balance', $request->amount);

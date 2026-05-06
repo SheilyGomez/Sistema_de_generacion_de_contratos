@@ -114,9 +114,11 @@ class LawyerRequestController extends Controller
                 'status' => LawyerRequestStatus::Completed,
             ]);
 
-            $freelancer = $lawyerRequest->freelancer;
-            $lawyer = $lawyerRequest->lawyer;
+            $freelancer = User::where('id', $lawyerRequest->freelancer_id)->lockForUpdate()->first();
+            $lawyer = User::where('id', $lawyerRequest->lawyer_id)->lockForUpdate()->first();
             $price = (float) $lawyerRequest->price;
+
+            abort_if((float) $freelancer->balance < $price, 400, 'El freelancer no tiene fondos suficientes para completar este pago.');
 
             $freelancer->decrement('balance', $price);
 

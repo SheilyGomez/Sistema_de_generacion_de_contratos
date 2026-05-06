@@ -10,6 +10,7 @@ use App\Http\Resources\ContractGenerationResource;
 use App\Models\ContractGeneration;
 use App\Models\LawyerRequest;
 use App\Models\User;
+use App\Enums\LawyerRequestStatus;
 use App\Enums\Role;
 use App\Services\AiService;
 use Illuminate\Http\JsonResponse;
@@ -99,7 +100,13 @@ class ContractGenerationController extends Controller
             ->firstOrFail();
 
         $price = (float) config('services.lawyer_review_price', 50.00);
-        abort_if((float) $user->balance < $price, 400, 'Fondos insuficientes. Recarga tu cuenta para continuar.');
+
+        $pendingTotal = (float) LawyerRequest::where('freelancer_id', $user->id)
+            ->where('status', LawyerRequestStatus::Pending)
+            ->sum('price');
+
+        $available = (float) $user->balance - $pendingTotal;
+        abort_if($available < $price, 400, 'Fondos insuficientes. Tienes otras peticiones pendientes que comprometen tu saldo.');
 
         $lawyerRequest = LawyerRequest::create([
             'contract_generation_id' => $contractGeneration->id,
@@ -113,5 +120,15 @@ class ContractGenerationController extends Controller
             'message' => 'Petición enviada al abogado.',
             'lawyer_request' => new \App\Http\Resources\LawyerRequestResource($lawyerRequest),
         ], 201);
+    }
+
+    public function myLawyerRequests(Request $request): JsonResponse
+    {
+        $requests = LawyerRequest::where('freelancer_id', $request->user()->id)
+            ->with(['contractGeneration', 'lawyer'])
+            ->latest()
+            ->paginate(20);
+
+        return response()->json($requests);
     }
 }
