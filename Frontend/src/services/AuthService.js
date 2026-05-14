@@ -9,8 +9,7 @@ export default {
 
 
     login(credentials) {
-        return api.post('/login', credentials);
+        return api.post('/auth/login', credentials);
     }
-    
 
 }
