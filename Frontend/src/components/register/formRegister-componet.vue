@@ -383,7 +383,7 @@ const register = async () => {
 .form-header p {
     margin-top: 1px;
 
-    color: #6b7280;
+    color: var(--body);
 
     font-size: 15px;
 }
@@ -405,7 +405,7 @@ const register = async () => {
 
     font-size: 14px;
 
-    color: #374151;
+    color: var(--heading);
 }
 
 .form-group input,
@@ -415,7 +415,7 @@ const register = async () => {
 
     padding: 10px 12px;
 
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--border);
 
     border-radius: 10px;
 
@@ -428,12 +428,13 @@ const register = async () => {
     box-sizing: border-box;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
 
-    border-color: #2563eb;
+    border-color: var(--accent);
 
     box-shadow:
-        0 0 0 3px rgba(37, 99, 235, 0.15);
+        0 0 0 3px rgba(255, 203, 116, 0.2);
 }
 
 /* BOTON */
@@ -450,9 +451,9 @@ button {
 
     border-radius: 12px;
 
-    background: #2563eb;
+    background: var(--accent);
 
-    color: white;
+    color: var(--accent-text);
 
     font-size: 16px;
 
@@ -465,7 +466,7 @@ button {
 
 button:hover {
 
-    background: #1d4ed8;
+    background: var(--accent-hover);
 }
 
 /* REGISTRO */
@@ -483,7 +484,7 @@ button:hover {
 
 .register-link a {
 
-    color: #2563eb;
+    color: var(--accent);
 
     text-decoration: none;
 
@@ -536,11 +537,11 @@ button:hover {
 
 .alert-message.info {
 
-    background: #dbeafe;
+    background: rgba(255, 203, 116, 0.12);
 
-    color: #2563eb;
+    color: #B8860B;
 
-    border-left: 5px solid #2563eb;
+    border-left: 5px solid var(--accent);
 }
 
 .espaciado {
