@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ContractService from '@/services/ContractService'
+import { marked } from 'marked'
 
 const route = useRoute()
 const router = useRouter()
@@ -90,7 +91,10 @@ onMounted(async () => {
           <i class="pi pi-shield"></i>
           <span>Resultado del análisis</span>
         </div>
-        <div class="detail-summary-content">{{ verification.ai_summary }}</div>
+        <div
+          class="detail-summary-content"
+          v-html="marked.parse(verification.ai_summary)"
+        ></div>
       </div>
 
       <div class="detail-actions">
@@ -218,7 +222,81 @@ onMounted(async () => {
   font-size: .9375rem;
   color: var(--body);
   line-height: 1.8;
-  white-space: pre-wrap;
+}
+
+.detail-summary-content :deep(h1),
+.detail-summary-content :deep(h2),
+.detail-summary-content :deep(h3),
+.detail-summary-content :deep(h4) {
+  font-weight: 600;
+  color: var(--heading);
+  margin: 1.5rem 0 .75rem;
+}
+
+.detail-summary-content :deep(h1) { font-size: 1.25rem; }
+.detail-summary-content :deep(h2) { font-size: 1.125rem; }
+.detail-summary-content :deep(h3) { font-size: 1rem; }
+
+.detail-summary-content :deep(p) {
+  margin-bottom: 1rem;
+}
+
+.detail-summary-content :deep(ul),
+.detail-summary-content :deep(ol) {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.detail-summary-content :deep(li) {
+  margin-bottom: .375rem;
+}
+
+.detail-summary-content :deep(strong) {
+  font-weight: 600;
+  color: var(--heading);
+}
+
+.detail-summary-content :deep(em) {
+  font-style: italic;
+}
+
+.detail-summary-content :deep(code) {
+  background: var(--hover);
+  padding: .125rem .375rem;
+  border-radius: .25rem;
+  font-size: .875rem;
+}
+
+.detail-summary-content :deep(pre) {
+  background: var(--hover);
+  padding: 1rem;
+  border-radius: .5rem;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.detail-summary-content :deep(pre code) {
+  background: none;
+  padding: 0;
+}
+
+.detail-summary-content :deep(blockquote) {
+  border-left: 3px solid var(--accent);
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: var(--body);
+  font-style: italic;
+}
+
+.detail-summary-content :deep(hr) {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.5rem 0;
+}
+
+.detail-summary-content :deep(a) {
+  color: var(--accent);
+  text-decoration: underline;
 }
 
 .detail-actions {

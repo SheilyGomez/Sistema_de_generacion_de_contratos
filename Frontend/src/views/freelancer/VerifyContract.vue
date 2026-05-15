@@ -47,6 +47,13 @@ function setFile(f) {
   file.value = f
 }
 
+function formatSize(bytes) {
+  if (!bytes) return '0 B'
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+}
+
 function clearFile() {
   file.value = null
   if (inputRef.value) inputRef.value.value = ''
@@ -61,11 +68,20 @@ async function upload() {
   try {
     const formData = new FormData()
     formData.append('contract', file.value)
-    const { data } = await ContractService.uploadVerification(formData)
-    router.push(`/freelancer/verifications/${data.data.id}`)
+    const response = await ContractService.uploadVerification(formData)
+    const id = response?.data?.data?.id
+    if (id) {
+      router.push(`/freelancer/verifications/${id}`)
+    } else {
+      router.push('/freelancer/verifications')
+    }
   } catch (err) {
     if (err.response?.status === 422) {
       error.value = err.response.data.message || 'El archivo no es válido.'
+    } else if (err.response?.status === 500) {
+      error.value = 'Error del servidor. Intenta de nuevo.'
+    } else if (err.code === 'ERR_NETWORK') {
+      error.value = 'No se pudo conectar con el servidor.'
     } else {
       error.value = 'Error al subir el archivo. Intenta de nuevo.'
     }
@@ -117,7 +133,7 @@ async function upload() {
         </div>
         <div class="file-card-body">
           <p class="file-card-name">{{ file.name }}</p>
-          <p class="file-card-size">{{ (file.size / 1024 / 1024).toFixed(1) }} MB</p>
+          <p class="file-card-size">{{ formatSize(file.size) }}</p>
         </div>
       </div>
       <button class="file-card-remove" @click="clearFile" :disabled="uploading">
