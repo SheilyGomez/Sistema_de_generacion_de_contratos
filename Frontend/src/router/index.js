@@ -40,9 +40,9 @@ const router = createRouter({
       children: [
         { path: '', redirect: '/freelancer/home' },
         { path: 'home', component: () => import('@/views/freelancer/HomeFreelancer.vue') },
-        { path: 'verify', component: PlaceholderView },
-        { path: 'verifications', component: PlaceholderView },
-        { path: 'verifications/:id', component: PlaceholderView },
+        { path: 'verify', component: () => import('@/views/freelancer/VerifyContract.vue') },
+        { path: 'verifications', component: () => import('@/views/freelancer/VerificationsList.vue') },
+        { path: 'verifications/:id', component: () => import('@/views/freelancer/VerificationDetail.vue') },
         { path: 'generations', component: PlaceholderView },
         { path: 'generations/:id', component: PlaceholderView },
         { path: 'lawyer-reviews', component: PlaceholderView },
