@@ -31,15 +31,11 @@ const alertType = ref('');
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-* {
+/* solo en el contenedor de auth */
 
+.container,
+.container * {
     font-family: 'Poppins', sans-serif;
-
-    margin: 0;
-
-    padding: 0;
-
-    box-sizing: border-box;
 }
 
 .container {
@@ -48,7 +44,7 @@ const alertType = ref('');
 
     height: 100vh;
 
-    display: flex; 
+    display: flex;
     /* este componete permite el cambio de posicion de los formularios depende de como se escriba */
 
     justify-content: center;

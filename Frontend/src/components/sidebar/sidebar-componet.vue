@@ -35,7 +35,9 @@ const menuItems = computed(() =>
   auth.isFreelancer ? freelancerMenu : abogadoMenu,
 )
 
-const isActive = (path) => route.path.startsWith(path)
+function isActive(path) {
+  return route.path.startsWith(path)
+}
 
 function closeSidebar() {
   if (window.innerWidth < 768) {
@@ -51,67 +53,53 @@ async function handleLogout() {
 
 <template>
   <aside
-    class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform bg-neutral-primary-soft border-e border-default"
-    :class="modelValue ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
+    class="sidebar"
+    :class="{ 'sidebar--hidden': !modelValue }"
   >
-    <div class="flex flex-col h-full">
-      <!-- Logo -->
-      <div class="flex items-center h-16 px-5 border-b border-default">
-        <i class="pi pi-file-pdf text-2xl text-fg-brand"></i>
-        <span class="ms-3 text-lg font-semibold text-heading whitespace-nowrap">GenContratos</span>
+    <!-- Logo -->
+    <div class="sidebar-logo">
+      <i class="pi pi-file-pdf"></i>
+      <span>GenContratos</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav">
+      <ul class="sidebar-nav-list">
+        <li v-for="item in menuItems" :key="item.to">
+          <RouterLink
+            :to="item.to"
+            class="sidebar-item"
+            :class="{ 'sidebar-item--active': isActive(item.to) }"
+            @click="closeSidebar"
+          >
+            <i :class="item.icon"></i>
+            <span>{{ item.label }}</span>
+          </RouterLink>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- User info -->
+    <div class="sidebar-user">
+      <div class="sidebar-user-info">
+        <div class="sidebar-avatar">
+          <span>{{ auth.user?.name?.charAt(0)?.toUpperCase() }}</span>
+        </div>
+        <div style="flex:1; min-width:0">
+          <p class="sidebar-user-name">{{ auth.user?.name }}</p>
+          <p class="sidebar-user-role">{{ auth.user?.role }}</p>
+        </div>
       </div>
 
-      <!-- Menu -->
-      <nav class="flex-1 px-3 py-4 overflow-y-auto">
-        <ul class="space-y-1">
-          <li v-for="item in menuItems" :key="item.to">
-            <RouterLink
-              :to="item.to"
-              @click="closeSidebar"
-              class="flex items-center px-3 py-2.5 rounded-lg transition-colors"
-              :class="
-                isActive(item.to)
-                  ? 'bg-neutral-tertiary text-fg-brand font-medium'
-                  : 'text-body hover:bg-neutral-tertiary hover:text-heading'
-              "
-            >
-              <i :class="[item.icon, 'text-lg w-5 text-center']"></i>
-              <span class="ms-3 text-sm">{{ item.label }}</span>
-            </RouterLink>
-          </li>
-        </ul>
-      </nav>
-
-      <!-- User info -->
-      <div class="border-t border-default p-4">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-9 h-9 rounded-full bg-neutral-tertiary flex items-center justify-center">
-            <span class="text-sm font-medium text-heading">
-              {{ auth.user?.name?.charAt(0)?.toUpperCase() }}
-            </span>
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-heading truncate">{{ auth.user?.name }}</p>
-            <p class="text-xs text-body capitalize">{{ auth.user?.role }}</p>
-          </div>
-        </div>
-
-        <div
-          v-if="auth.isFreelancer"
-          class="flex items-center justify-between px-2 py-1.5 mb-3 bg-neutral-secondary-soft rounded-lg"
-        >
-          <span class="text-xs text-body">Saldo</span>
-          <span class="text-sm font-semibold text-heading">${{ (Number(wallet.balance) || 0).toFixed(2) }}</span>
-        </div>
-
-        <button
-          @click="handleLogout"
-          class="flex items-center w-full px-3 py-2 text-sm text-body rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors"
-        >
-          <i class="pi pi-sign-out text-lg w-5 text-center"></i>
-          <span class="ms-3">Cerrar sesión</span>
-        </button>
+      <div v-if="auth.isFreelancer" class="sidebar-balance">
+        <span class="sidebar-balance-label">Saldo</span>
+        <span class="sidebar-balance-amount">${{ (Number(wallet.balance) || 0).toFixed(2) }}</span>
       </div>
+
+      <button class="sidebar-logout" @click="handleLogout">
+        <i class="pi pi-sign-out"></i>
+        <span>Cerrar sesión</span>
+      </button>
     </div>
   </aside>
 </template>

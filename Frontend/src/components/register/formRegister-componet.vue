@@ -250,11 +250,11 @@ const register = async () => {
                         </option>
 
                         <option value="freelancer">
-                            Frelancer
+                            Freelancer
                         </option>
 
-                        <option value="employee">
-                            Juridico
+                        <option value="abogado">
+                            Abogado
                         </option>
 
                     </select>
