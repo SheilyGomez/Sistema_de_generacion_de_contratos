@@ -2,37 +2,93 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import LoginView from '@/views/auth/LoginView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
+import AuthLayout from '@/layouts/AuthLayout.vue'
+import PlaceholderView from '@/views/PlaceholderView.vue'
 
 const router = createRouter({
-
   history: createWebHistory(import.meta.env.BASE_URL),
 
   routes: [
-
     {
       path: '/',
-      redirect: '/login'
+      redirect: () => {
+        const token = localStorage.getItem('auth_token')
+        const user = JSON.parse(localStorage.getItem('auth_user') || 'null')
+        if (token && user) {
+          return user.role === 'freelancer' ? '/freelancer/home' : '/abogado/home'
+        }
+        return '/login'
+      },
     },
 
     {
       path: '/login',
-      component: LoginView
+      component: LoginView,
     },
 
     {
       path: '/register',
       name: 'register',
-      component: RegisterView
+      component: RegisterView,
     },
 
+    // --- Freelancer ---
     {
-      path: '/dashboard',
-      name: 'dashboard',
-      component: () => import('@/views/dashboard/DashboardView.vue') // dashboard protegido, solo accesible para usuarios autenticados
-    }
+      path: '/freelancer',
+      component: AuthLayout,
+      meta: { requiresAuth: true, role: 'freelancer' },
+      children: [
+        { path: '', redirect: '/freelancer/home' },
+        { path: 'home', component: PlaceholderView },
+        { path: 'verify', component: PlaceholderView },
+        { path: 'verifications', component: PlaceholderView },
+        { path: 'verifications/:id', component: PlaceholderView },
+        { path: 'generations', component: PlaceholderView },
+        { path: 'generations/:id', component: PlaceholderView },
+        { path: 'lawyer-reviews', component: PlaceholderView },
+        { path: 'lawyer-reviews/:id', component: PlaceholderView },
+        { path: 'settings', component: PlaceholderView },
+      ],
+    },
 
+    // --- Abogado ---
+    {
+      path: '/abogado',
+      component: AuthLayout,
+      meta: { requiresAuth: true, role: 'abogado' },
+      children: [
+        { path: '', redirect: '/abogado/home' },
+        { path: 'home', component: PlaceholderView },
+        { path: 'requests/:id', component: PlaceholderView },
+        { path: 'settings', component: PlaceholderView },
+      ],
+    },
+
+    // 404 catch-all
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/',
+    },
   ],
+})
 
+router.beforeEach((to) => {
+  const token = localStorage.getItem('auth_token')
+  const user = JSON.parse(localStorage.getItem('auth_user') || 'null')
+  const requiresAuth = to.matched.some((r) => r.meta.requiresAuth)
+  const allowedRole = to.matched.find((r) => r.meta.role)?.meta?.role
+
+  if (requiresAuth && !token) {
+    return '/login'
+  }
+
+  if (token && user && (to.path === '/login' || to.path === '/register')) {
+    return user.role === 'freelancer' ? '/freelancer/home' : '/abogado/home'
+  }
+
+  if (token && user && allowedRole && user.role !== allowedRole) {
+    return user.role === 'freelancer' ? '/freelancer/home' : '/abogado/home'
+  }
 })
 
 export default router
