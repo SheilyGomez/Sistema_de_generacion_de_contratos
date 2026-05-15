@@ -136,6 +136,7 @@ onMounted(async () => {
   align-items: center;
   gap: .375rem;
   padding: .5rem 1rem;
+  width: fit-content;
   background: var(--accent);
   color: var(--accent-text);
   font-size: .875rem;
