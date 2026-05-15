@@ -39,7 +39,7 @@ const router = createRouter({
       meta: { requiresAuth: true, role: 'freelancer' },
       children: [
         { path: '', redirect: '/freelancer/home' },
-        { path: 'home', component: PlaceholderView },
+        { path: 'home', component: () => import('@/views/freelancer/HomeFreelancer.vue') },
         { path: 'verify', component: PlaceholderView },
         { path: 'verifications', component: PlaceholderView },
         { path: 'verifications/:id', component: PlaceholderView },
@@ -58,7 +58,7 @@ const router = createRouter({
       meta: { requiresAuth: true, role: 'abogado' },
       children: [
         { path: '', redirect: '/abogado/home' },
-        { path: 'home', component: PlaceholderView },
+        { path: 'home', component: () => import('@/views/abogado/HomeAbogado.vue') },
         { path: 'requests/:id', component: PlaceholderView },
         { path: 'settings', component: PlaceholderView },
       ],

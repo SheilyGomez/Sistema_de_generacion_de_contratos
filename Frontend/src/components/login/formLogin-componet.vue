@@ -45,9 +45,11 @@ const login = async () => {
 
         authStore.setAuth(token, user);
 
+        const home = user.role === 'freelancer' ? '/freelancer/home' : '/abogado/home';
+
         setTimeout(() => {
 
-            router.push('/dashboard');
+            router.push(home);
 
         }, 1000);
 
