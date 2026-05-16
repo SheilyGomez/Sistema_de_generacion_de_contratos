@@ -76,7 +76,14 @@ class ContractGenerationController extends Controller
 
     public function download(Request $request, ContractGeneration $contractGeneration): BinaryFileResponse
     {
-        abort_if($contractGeneration->user_id !== $request->user()->id, 403);
+        $user = $request->user();
+        $isOwner = $contractGeneration->user_id === $user->id;
+        $isLawyer = $user->role?->value === 'abogado' &&
+            LawyerRequest::where('contract_generation_id', $contractGeneration->id)
+                ->where('lawyer_id', $user->id)
+                ->exists();
+
+        abort_if(!$isOwner && !$isLawyer, 403);
 
         abort_if(
             !$contractGeneration->generated_file_path ||

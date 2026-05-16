@@ -18,6 +18,13 @@ const router = useRouter()
 const auth = useAuthStore()
 const wallet = useWalletStore()
 
+const displayBalance = computed(() => {
+  const bal = wallet?.balance
+  if (bal === null || bal === undefined) return '0.00'
+  const num = Number(bal)
+  return Number.isFinite(num) ? num.toFixed(2) : '0.00'
+})
+
 const freelancerMenu = [
   { label: 'Inicio', icon: 'pi pi-home', to: '/freelancer/home' },
   { label: 'Contratos verificados', icon: 'pi pi-file-check', to: '/freelancer/verifications' },
@@ -93,7 +100,7 @@ async function handleLogout() {
 
       <div v-if="auth.isFreelancer" class="sidebar-balance">
         <span class="sidebar-balance-label">Saldo</span>
-        <span class="sidebar-balance-amount">${{ (Number(wallet.balance) || 0).toFixed(2) }}</span>
+        <span class="sidebar-balance-amount">${{ displayBalance }}</span>
       </div>
 
       <button class="sidebar-logout" @click="handleLogout">

@@ -60,7 +60,7 @@ const router = createRouter({
       children: [
         { path: '', redirect: '/abogado/home' },
         { path: 'home', component: () => import('@/views/abogado/HomeAbogado.vue') },
-        { path: 'requests/:id', component: PlaceholderView },
+        { path: 'requests/:id', component: () => import('@/views/abogado/RequestDetail.vue') },
         { path: 'settings', component: PlaceholderView },
       ],
     },
