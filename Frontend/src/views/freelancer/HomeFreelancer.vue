@@ -23,7 +23,7 @@ const router = useRouter()
       </button>
 
       <!-- Crear contrato -->
-      <button class="home-card" @click="router.push('/freelancer/generations')">
+      <button class="home-card" @click="router.push('/freelancer/generate')">
         <div class="home-card-icon">
           <i class="pi pi-file-plus"></i>
         </div>
