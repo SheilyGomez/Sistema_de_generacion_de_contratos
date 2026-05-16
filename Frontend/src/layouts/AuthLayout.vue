@@ -21,7 +21,7 @@ onMounted(async () => {
   if (!auth.user) {
     await auth.fetchUser()
   }
-  if (auth.isFreelancer) {
+  if (auth.isAuthenticated) {
     wallet.fetchBalance()
   }
 })

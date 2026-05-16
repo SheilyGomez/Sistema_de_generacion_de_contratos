@@ -98,7 +98,7 @@ async function handleLogout() {
         </div>
       </div>
 
-      <div v-if="auth.isFreelancer" class="sidebar-balance">
+      <div v-if="auth.isAuthenticated" class="sidebar-balance">
         <span class="sidebar-balance-label">Saldo</span>
         <span class="sidebar-balance-amount">${{ displayBalance }}</span>
       </div>
