@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import LawyerService from '@/services/LawyerService'
+import ContractService from '@/services/ContractService'
 import { marked } from 'marked'
 
 const route = useRoute()
@@ -10,6 +11,7 @@ const router = useRouter()
 const request = ref(null)
 const loading = ref(true)
 const downloading = ref(false)
+const downloadingCorrected = ref(false)
 const error = ref('')
 
 function formatDate(dateStr) {
@@ -43,8 +45,27 @@ function formatRequirements(req) {
   ].filter((r) => r.value)
 }
 
-async function downloadFile() {
+async function downloadOriginal() {
   downloading.value = true
+  try {
+    const res = await ContractService.downloadGeneration(request.value.contract_generation_id)
+    const url = window.URL.createObjectURL(new Blob([res.data]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', request.value.contract_generation.generated_file_name)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.URL.revokeObjectURL(url)
+  } catch {
+    // ignored
+  } finally {
+    downloading.value = false
+  }
+}
+
+async function downloadCorrected() {
+  downloadingCorrected.value = true
   try {
     const res = await LawyerService.downloadCorrectedContract(request.value.id)
     const url = window.URL.createObjectURL(new Blob([res.data]))
@@ -58,7 +79,7 @@ async function downloadFile() {
   } catch {
     // ignored
   } finally {
-    downloading.value = false
+    downloadingCorrected.value = false
   }
 }
 
@@ -172,16 +193,24 @@ onMounted(async () => {
         </div>
       </div>
 
-      <!-- Download corrected -->
+      <!-- Download buttons -->
       <div class="detail-actions">
         <button
-          v-if="request.corrected_file_name"
+          v-if="request.contract_generation?.generated_file_name"
           class="detail-download-btn"
           :disabled="downloading"
-          @click="downloadFile"
+          @click="downloadOriginal"
         >
           <i :class="downloading ? 'pi pi-spin pi-spinner' : 'pi pi-download'"></i>
-          <span>{{ downloading ? 'Descargando...' : 'Descargar contrato corregido' }}</span>
+          <span>{{ downloading ? 'Descargando...' : 'Descargar contrato original' }}</span>
+        </button>
+        <button
+          class="detail-download-btn"
+          :disabled="downloadingCorrected || !request.corrected_file_name"
+          @click="downloadCorrected"
+        >
+          <i :class="downloadingCorrected ? 'pi pi-spin pi-spinner' : 'pi pi-download'"></i>
+          <span>{{ downloadingCorrected ? 'Descargando...' : 'Descargar contrato corregido' }}</span>
         </button>
       </div>
     </template>
